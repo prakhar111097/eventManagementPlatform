@@ -1,11 +1,12 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-
+const uri = process.env.URI || "mongodb://127.0.0.1:27017/northLadderDB"
 //mongoDB connection
-mongoose.connect('mongodb://127.0.0.1:27017/northLadderDB', {
+mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
-    console.log("mongodb connected at: mongodb://127.0.0.1:27107/northLadderDB")
+    console.log("mongodb connected at:",uri);
 }).catch((e) => {
     console.log(e)
     console.log("mongodb not connected");

@@ -1,9 +1,10 @@
+require('dotenv').config();
 require('./db/dbConnection');
 const express = require('express');
 const eventRouter = require('./routes/eventRoutes');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(eventRouter)
