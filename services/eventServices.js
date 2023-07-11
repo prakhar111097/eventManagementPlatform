@@ -25,31 +25,48 @@ const getEvents = async (req, res) => {
 }
 
 const addEvent = async (req, res) => {
-    try {
-        if ((!req.body.id) || (!req.body.eventName) || (!req.body.eventDate) || (!req.body.organizer) || (!req.body.email) || (!req.body.phone)) {
-            res.status(400).send("Provide all the mandatory information");
-        } else {
-            let date = new Date(req.body.eventDate)
-            let event = {
-                id: req.body.id,
-                eventName: req.body.eventName,
-                eventDate: date,
-                organizer: req.body.organizer,
-                email: req.body.email,
-                phone: req.body.phone,
-                location: {
-                    street: req.body.location.street,
-                    city: req.body.location.city,
-                    state: req.body.location.state,
-                    zip: req.body.location.zip,
-                },
-                createdAt: Date.now(),
-                updatedAt: Date.now()
-            }
-            let result = await EventModel.create(event);
-            res.status(200).send(result);
+    let inputError =0;
+    try {   
+            console.log("Inside addEvent");
+            let event = [];
+            let request = [];
+        if(!(Array.isArray(req.body))){
+            request.push(req.body);
+        }else{
+            request = req.body;
         }
+            for(let i =0;i<req.body.length;i++){
+                if ((!req.body[i].id) || (!req.body[i].eventName) || (!req.body[i].eventDate) || (!req.body[i].organizer) || (!req.body[i].email) || (!req.body[i].phone)) {
+                    inputError = i+1;
+                    throw (`Please provide the required information at ${inputError} object `);
+                } else {
+                    let date = new Date(req.body[i].eventDate)
+                    let eve = {
+                        id: req.body[i].id,
+                        eventName: req.body[i].eventName,
+                        eventDate: date,
+                        organizer: req.body[i].organizer,
+                        email: req.body[i].email,
+                        phone: req.body[i].phone,
+                        location: {
+                            street: req.body[i].location.street,
+                            city: req.body[i].location.city,
+                            state: req.body[i].location.state,
+                            zip: req.body[i].location.zip,
+                        },
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    }
+                    event.push(eve);
+                }
+            }
+        let result= await EventModel.insertMany(event);
+        console.log(result);
+        res.status(200).send(result);
     } catch (error) {
+        if(inputError>0){
+            res.status(400).send(error);
+        }
         res.status(500).send(error);
     }
 }
